@@ -1,4 +1,5 @@
 # Python 3.8.2 (tags/v3.8.2:7b3ab59, Feb 25 2020, 22:45:29) [MSC v.1916 32 bit (Intel)]
+# FKB put these packages in a requirements.txt fiel. It enables installation from file
 # pip install comdirect-api-simple==0.0.10
 # pip install pandas==1.2.3
 # pip install jupyterlab==3.0.9
@@ -13,9 +14,10 @@ import smtplib
 from email.message import EmailMessage
 from comdirect_api.comdirect_client import ComdirectClient  # api wrapper, may not be well maintained
 
+# FKB write module/global variables like this in capital letter 
 csv_raw = 'TEST_jan-mar135_raw.csv'
 
-
+# FKB why dont you use the pandas to_csv method? 
 def write_csv(data):
 
     try:
@@ -41,10 +43,11 @@ def main():
     client = ComdirectClient(client_id, client_secret)
 
     # credentials
+    # FKB The authentification would be a good code block for sourcing into a function
     user = os.environ.get('COMD_user')
     password = os.environ.get('COMD_password')
     client.fetch_tan(user, password)
-
+    # FKB You could maybe check if you are able to loop over active session until you have activated photoTan. But maybe the session gets invalidated whether there is a request without activated photoTan
     time.sleep(60)  # allow time to get photoTAN activated
 
     client.activate_session()
@@ -108,6 +111,7 @@ df = df[[
     'Oliver'
 ]]
 
+# FKB I wouldnt define a variable for each month but rather store the dataframe in a dictionary with the MOnth name as the key.
 # Monthly dataframes
 df_jan = df[(df['Month'] == 'January')]
 df_feb = df[(df['Month'] == 'February')]
@@ -137,6 +141,7 @@ df_mar.to_csv('TESTmar21_data_full.csv')
 # df_dec.to_csv('TESTdec21_data_full.csv')
 
 # save sum of totals per month df to csv
+# FKB excellent example for something that can be put into a function. You apply the same calculations to each dataframe. Therefore you put the code in a function and call it for each dataframe.
 df_totals = {'March': {
     'Supermarkt': df_mar['Supermarkt'].sum(),
     'Oliver': df_mar['Oliver'].sum(),
