@@ -122,6 +122,7 @@ def data_prep():
                 'Drogerie': df_months[df_month]['Drogerie'].sum(),
                 'Miete/Wohnen': df_months[df_month]['Miete/Wohnen'].sum(),
                 'Essen_gehen': df_months[df_month]['Essen_gehen'].sum(),
+                'Reise/Freizeit': df_months[df_month]['Reise/Freizeit'].sum(),
                 'Total': df_months[df_month]['Amount'].sum(),
             }
 
