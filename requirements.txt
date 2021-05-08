@@ -1,0 +1,4 @@
+comdirect-api-simple==0.0.10
+pandas==1.2.3
+jupyterlab==3.0.9
+matplotlib-3.4.1
