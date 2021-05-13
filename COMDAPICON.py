@@ -108,7 +108,7 @@ def data_prep():
         for month in month_list:
             df_months[month] = df[(df['Month'] == month)]
 
-        # save to csv file - this specific for loop only works directly in jupyter nb
+        # save to csv file
         for key, value in df_months.items():
             if key in month_list:
                 df_months[key].to_csv(f'test{key}data.csv')
