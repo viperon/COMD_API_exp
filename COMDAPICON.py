@@ -33,7 +33,8 @@ def client_connection():
         account_uuid,
         paging_count=150,  # 135 == ~ 4 months worth of transactions
     )
-
+    # TODO put this function on root level and supply transactions as an argument
+    # If not neccessary, you don´t want to access objects inside a function taht are in the outer environment
     def parse_response():
         """
         Parse response into dictionary and dictionary into csv
@@ -100,7 +101,7 @@ def data_prep():
     df.fillna(0, inplace=True)
     df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d')
     df['Month'] = df['Date'].dt.month_name()
-
+    # TODO Its the same for this function as well. define function on root level (root is the first level [on which "data_prep" is defined])
     def monthly_prep():
 
         month_list = ['January', 'February', 'March', 'April']
@@ -115,6 +116,8 @@ def data_prep():
 
         # sum of DFs to csv
         df_totals = dict()
+        # TODO This should be implemented with the group_by method of pandas dataframes. 
+        # Operat on the dataframe "df", groupby month and summarise the columns
         for df_month in month_list:
             df_totals[df_month] = {
                 'Supermarkt': df_months[df_month]['Supermarkt'].sum(),
@@ -170,5 +173,6 @@ def main():
     data_prep()
     email_files()
 
-
-main()
+# TODO Put this protector into a file, if it contains functions that you maybe want to import in other files.
+if __name__ == "__main__":
+    main()
