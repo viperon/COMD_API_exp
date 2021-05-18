@@ -34,38 +34,33 @@ def client_connection():
         paging_count=150,  # 135 == ~ 4 months worth of transactions
     )
 
-    def parse_response():
-        """
-        Parse response into dictionary and dictionary into csv
-        """
-        transac_dict = dict()
-        for item in transactions['values']:
-            for k, v in item.items():
-                if k == 'bookingDate':
-                    transac_dict['Date'] = v
-                if k == 'amount':
-                    transac_dict['Amount'] = v['value']
-                if k == 'remitter':
-                    try:
-                        transac_dict['Description'] = v.get('holderName')
-                    except AttributeError:
-                        transac_dict['Description'] = 'None'
-                if k == 'remittanceInfo':
-                    transac_dict['Info'] = v[:18]
+    transac_dict = dict()
+    for item in transactions['values']:
+        for k, v in item.items():
+            if k == 'bookingDate':
+                transac_dict['Date'] = v
+            if k == 'amount':
+                transac_dict['Amount'] = v['value']
+            if k == 'remitter':
+                try:
+                    transac_dict['Description'] = v.get('holderName')
+                except AttributeError:
+                    transac_dict['Description'] = 'None'
+            if k == 'remittanceInfo':
+                transac_dict['Info'] = v[:18]
 
-            try:
-                with open('TESTCOMD_review1raw.csv', 'a', encoding='utf-8') as document:
-                    writer = csv.writer(document)
+        try:
+            with open('TESTCOMD_review1raw.csv', 'a', encoding='utf-8') as document:
+                writer = csv.writer(document)
 
-                    writer.writerow(
-                        [transac_dict['Date'],
-                         transac_dict['Amount'],
-                         transac_dict['Description'],
-                         transac_dict['Info']
-                         ])
-            except TypeError as e:
-                print(e, '\n line missed')
-    parse_response()
+                writer.writerow(
+                    [transac_dict['Date'],
+                     transac_dict['Amount'],
+                     transac_dict['Description'],
+                     transac_dict['Info']
+                     ])
+        except TypeError as e:
+            print(e, '\n line missed')
 
 
 def data_prep():
@@ -101,35 +96,32 @@ def data_prep():
     df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d')
     df['Month'] = df['Date'].dt.month_name()
 
-    def monthly_prep():
+    month_list = ['January', 'February', 'March', 'April']
+    df_months = dict()
+    for month in month_list:
+        df_months[month] = df[(df['Month'] == month)]
 
-        month_list = ['January', 'February', 'March', 'April']
-        df_months = dict()
-        for month in month_list:
-            df_months[month] = df[(df['Month'] == month)]
+    # save to csv file
+    for key, value in df_months.items():
+        if key in month_list:
+            df_months[key].to_csv(f'test{key}data.csv')
 
-        # save to csv file
-        for key, value in df_months.items():
-            if key in month_list:
-                df_months[key].to_csv(f'test{key}data.csv')
+    # sum of DFs to csv
+    df_totals = dict()
+    month_grp = df.groupby(['Month'])
+    for month in month_list:
+        df_totals[month] = {
+            'Supermarkt': month_grp['Supermarkt'].sum().loc[month],
+            'Oliver': month_grp['Oliver'].sum().loc[month],
+            'Drogerie': month_grp['Drogerie'].sum().loc[month],
+            'Miete/Wohnen': month_grp['Miete/Wohnen'].sum().loc[month],
+            'Essen_gehen': month_grp['Essen_gehen'].sum().loc[month],
+            'Reise/Freizeit': month_grp['Reise/Freizeit'].sum().loc[month],
+            'Totals': month_grp['Amount'].sum().loc[month],
+        }
 
-        # sum of DFs to csv
-        df_totals = dict()
-        for df_month in month_list:
-            df_totals[df_month] = {
-                'Supermarkt': df_months[df_month]['Supermarkt'].sum(),
-                'Oliver': df_months[df_month]['Oliver'].sum(),
-                'Drogerie': df_months[df_month]['Drogerie'].sum(),
-                'Miete/Wohnen': df_months[df_month]['Miete/Wohnen'].sum(),
-                'Essen_gehen': df_months[df_month]['Essen_gehen'].sum(),
-                'Reise/Freizeit': df_months[df_month]['Reise/Freizeit'].sum(),
-                'Total': df_months[df_month]['Amount'].sum(),
-            }
-
-            df_sum = pd.DataFrame.from_dict(df_totals)
-            df_sum.to_csv('TESTyear_totals_21_data1.csv')
-
-    monthly_prep()
+        df_sum = pd.DataFrame.from_dict(df_totals)
+        df_sum.to_csv('TESTyear_totals_21_data1.csv')
 
 
 def email_files():
@@ -145,10 +137,10 @@ def email_files():
 
     files = [
         'TESTyear_totals_21_data1.csv',
-        # 'testJanuarydata.csv',
-        # 'testFebruarydata.csv',
-        # 'testMarchdata.csv',
-        # 'testAprildata.csv',
+        'testJanuarydata.csv',
+        'testFebruarydata.csv',
+        'testMarchdata.csv',
+        'testAprildata.csv',
     ]
 
     for file in files:
@@ -171,4 +163,5 @@ def main():
     email_files()
 
 
-main()
+if __name__ == "__main__":
+    main()
