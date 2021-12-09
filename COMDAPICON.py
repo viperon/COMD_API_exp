@@ -14,17 +14,17 @@ def client_connection():
     Connect to Com-direct API, request transaction details and parse it into dict and then to csv.
     Function monthly_data() takes one parameter which is the name of the month to extract data from.
     """
-    client_id = os.environ.get('COMD_client_id')
-    client_secret = os.environ.get('COMD_client_secret')
+    client_id = os.environ.get('COMD_client_id')  #TODO turn into MODULE variable
+    client_secret = os.environ.get('COMD_client_secret')  #TODO turn into MODULE variable
     client = ComdirectClient(client_id, client_secret)
     # credentials
-    user = os.environ.get('COMD_user')
-    password = os.environ.get('COMD_password')
+    user = os.environ.get('COMD_user')  #TODO turn into MODULE variable
+    password = os.environ.get('COMD_password')  #TODO turn into MODULE variable
     client.fetch_tan(user, password)
     time.sleep(30)  # sleep 30 seconds to get photoTAN activated
     client.activate_session()
     client.refresh_token()
-    account_uuid = os.environ.get('COMD_account_uuid')
+    account_uuid = os.environ.get('COMD_account_uuid')  #TODO turn into MODULE variable
     transactions = client.get_account_transactions(
         account_uuid,
         paging_count=60,  # 135 == ~ 4 months worth of transactions
@@ -162,3 +162,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+#update code with local git from old machine.
