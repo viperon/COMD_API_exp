@@ -28,9 +28,9 @@ def client_connection():
     account_uuid = COMD_uuid
     transactions = client.get_account_transactions(
         account_uuid,
-        paging_count=135,  # 45 is ~1 months worth of transactions.
+        paging_count=300,  # 45 is ~1 months worth of transactions.
     )
-    print(transactions['values'])
+    # print(transactions['values'])
     return transactions['values']
 
 
@@ -105,7 +105,7 @@ def monthly_data(months):
     for key, value in df_months.items():
         if key in months:
             df_months[key].to_csv(f'data/{months}data.csv')  # month individual file
-            df_months[key].to_csv(f'data/Archive/COMD-processed.csv', mode='a', header=False)  # append main csv file
+            df_months[key].to_csv(f'raw_data/COMD-processed.csv', mode='a', header=False)  # append main csv file
 
     # summary of months
     df_totals = dict()
@@ -144,7 +144,7 @@ def email_files():
     msg = EmailMessage()
     msg['Subject'] = 'Comdirect files Jan - Jun 2021'
     msg['From'] = EMAIL_ADDRESS
-    msg['To'] = 'iseekream@protonmail.com'
+    msg['To'] = EMAIL_ADDRESS
     msg.set_content('Final version, files attached.')
     files = [
         'data/Month_totals_21_data1.csv',
