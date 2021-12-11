@@ -22,13 +22,13 @@ def client_connection():
     user = COMD_user
     password = COMD_password
     client.fetch_tan(user, password)
-    time.sleep(30)  # sleep 30 to get photoTAN active
+    time.sleep(15)  # sleep 30 to get photoTAN active
     client.activate_session()
     client.refresh_token()
     account_uuid = COMD_uuid
     transactions = client.get_account_transactions(
         account_uuid,
-        paging_count=300,  # 45 is ~1 months worth of transactions.
+        paging_count=500,  # 45 is ~1 months worth of transactions.
     )
     # print(transactions['values'])
     return transactions['values']
@@ -71,7 +71,7 @@ def monthly_data(months):
     # df1['Description'] = df1.Description.str.split(':', expand=True)[1]
     # df1['Description'] = df1.Description.str.split('}', expand=True)[0]
     # merge
-    df2 = pd.read_excel('raw_data/2021_Übersicht_PayPal_20211031.xlsx')
+    df2 = pd.read_excel('raw_data/2021_Übersicht_PayPal_20211209.xlsx')
     df = df1.append(df2, ignore_index=True)
 
     df.Description = np.where(df.Description.isnull(), df.Info, df.Description)
@@ -79,24 +79,25 @@ def monthly_data(months):
     df['Description'] = np.where(df['Description'].str.startswith('01'), df['Description'].str[2:], df['Description'])
     # FILTERS
     df['Supermarkt'] = np.where(df['Description'].str.contains(
-        'EDEKA|PaySqu|PAYONE|NETTO|ALDI|Schäf|NAH UND|ZEIT FUER|ALNATUR|DER KUCH|CAFE LEBENS|BAECKER|Bio Kondit|unverpackt|REWE|WURST',
+        'BIO COMPANY|EDEKA|PaySqu|PAYONE|NETTO|ALDI|Schäf|NAH UND|ZEIT FUER|ALNATUR|DER KUCH|CAFE LEBENS|BAECKER|Bio Kondit|unverpackt|REWE|WURST|Lebensmittell|LIDL|SCHAEFERS|MASYMAS|MERCADONA|TGB LOS TOMAS|Kamps',
         case=False), df['Amount'], np.nan)
     df['Miete/Wohnen'] = np.where(df['Description'].str.contains(
-        'Telefonica|IKEA|Stadtwerke|OVAG|Miet|Helpling|Wohn|Glühbirne|Rundfunk|BAUHAUS|Betriebskos|Monatsabrech|PORTA|Amazon',
+        'Telefonica|IKEA|Stadtwerke|OVAG|Miet|Helpling|Wohn|Glühbirne|Rundfunk|BAUHAUS|Betriebskos|MONATSABRE|PORTA|Amazon|Kd-Nr.: 60522207|Vertragskonto 20|Infos zur Beitra',
         case=False), df['Amount'], np.nan)
     df['Drogerie'] = np.where(df['Description'].str.contains(
-        'ROSSMANN|OEVERHAUS|Apo Doc|DROGERIE|APOTHEKE',
+        'ROSSMANN|OEVERHAUS|Apo Doc|DROGERIE|APOTHEKE|2106104511505582|Mueller sagt Dan|0911164311887772|ApoNeo',
         case=False), df['Amount'], np.nan)
     df['Essen_gehen'] = np.where(df['Description'].str.contains(
-        'SUSHI|Funky Fisch|ISHIN|BURGER',
+        'SUSHI|Funky Fisch|ISHIN|BURGER|Imbiss|RESTAURANT|ORIENT MASTER|PHO 56',
         case=False), df['Amount'], np.nan)
     df['Oliver'] = np.where(df['Info'].str.contains(
-        'Limango|Vinted|LANGERBLO|0121340000|M BERLIN|Baby|Vertbaudet',
+        'Oliver|Limango|Vinted|LANGERBLO|0121340000|M BERLIN|Baby|Vertbaudet|Kinder|sigikid|Depot-Spa|BALLONHE|GROW',
         case=False), df['Amount'], np.nan)
     df['Reise/Freizeit'] = np.where(df['Description'].str.contains(
-        'Blocsport|Boulder', case=False), df['Amount'], np.nan)
+        'Blocsport|Boulder|LATE SHOP|Carsharing|DECATHLON|BERLINER VERKEHR|JAVE|Paint Your Style', case=False), df['Amount'], np.nan)
 
     df.fillna(0, inplace=True)
+    # df.Info = np.where(df.Info.str.startswith('None'), df.Description, df.Info)
     df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d')
     df['Month'] = df['Date'].dt.month_name()
 
@@ -172,8 +173,12 @@ def email_files():
 def main():
 
     parse_data()
+    monthly_data('June')
+    monthly_data('July')
+    monthly_data('August')
+    monthly_data('September')
+    monthly_data('October')
     monthly_data('November')
-    # monthly_data('August')
     # email_files()
 
 
