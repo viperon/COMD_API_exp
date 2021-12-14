@@ -40,12 +40,20 @@ def yearly_view():
     df_temp['average'] = round(df_temp.sum(axis=1)/len(df_temp.T), 2)
     return df_temp
 
+# YEAR FILE
+def read_yearly_file():
+    """
+    Reads file logging monthly totals
+    """
+    df = pd.read_csv('data/Month_totals_21_data1.csv')
+    return df.drop('Totals', axis=1)
+
 
 def detail_monthly_payments(month):
     """
     Displays all payments of a given month
     """
-    df_income, df_payments = split_dfs()
+    df_payments = split_dfs()[1]
     return df_payments[df_payments['Month'] == month]
 
 

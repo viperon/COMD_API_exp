@@ -1,10 +1,12 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import pandas as pd
-from constructor import detail_monthly_payments, yearly_view, set_income, set_expenditure, set_month_overview
+from constructor import detail_monthly_payments, yearly_view, set_income, set_expenditure, read_yearly_file
 from params import FRONT_PASSWORD
 
 st.write('# 2021 Overview')
+
+
 
 def yearly_view_graph():
 
@@ -37,6 +39,16 @@ def yearly_view_graph():
     st.write(overview)
     st.sidebar.write(pd.DataFrame(overview['average']))
     
+def plot_categories_yearly(category):
+    year_data = read_yearly_file()
+    if category in year_data.columns[1:]:
+        
+        fig, ax = plt.subplots(figsize=(18,8))
+        plt.title(f'{category} history')
+        ax.bar(year_data['Month'], abs(year_data[category]))
+        ax.grid()
+        st.pyplot(fig)
+        
 
 def income_expenditure():
     income = set_income()
@@ -56,6 +68,7 @@ def income_expenditure():
     
 def view_monthly_payments(month):
     df = detail_monthly_payments(month)
+    df = df.round(decimals = 2)
     st.write(df)
     
     fig, ax = plt.subplots(figsize=(15,5))
@@ -74,26 +87,37 @@ def front_door():
     input_password = st.text_input('Enter your password')
     
     if input_password == FRONT_PASSWORD:
+        
+        # YEARLY VIEW
         st.sidebar.write('Select your view:')
         if st.sidebar.checkbox('Yearly view'):
             st.write('''
                 Displays graphs and a table about the year of 2021
                 ''')
             yearly_view_graph()
+            
+            
+            category = st.selectbox(
+     'Select a Category',
+     ('None' , 'Supermarkt', 'Oliver', 'Drogerie', 'Miete/Wohnen', 'Essen_gehen', 'Reise/Freizeit'))
+            if category is not None:
+                st.write('You selected:', category  )
+            plot_categories_yearly(category)
         
-        
+        # INCOME VS EXPENDITURE
         if st.sidebar.checkbox('Income vs Expenditure'):
             st.write('''
                 Displays total Income, Expenditure and the difference table.
                 ''')   
             income_expenditure()
-            
+        
+        # MONTHLY DETAILS
         if st.sidebar.checkbox('View Month Details'):
             st.write('''
                 View all monthly payment details
                 ''')
             month = st.selectbox(
-     'How would you like to be contacted?',
+     'Select a Month',
      ('None' , 'June', 'July', 'August', 'September', 'October', 'October', 'November'))
             if month is not None:
                 st.write('You selected:', month) 
@@ -101,3 +125,4 @@ def front_door():
 
 front_door()
 
+#TODO implement API call via frontend
