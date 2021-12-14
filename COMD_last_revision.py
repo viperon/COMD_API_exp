@@ -12,8 +12,7 @@ from params import COMD_client_id, COMD_client_secret, COMD_user, COMD_uuid, COM
 
 def client_connection():
     """
-    Connect to Com-direct API, request transaction details and parse it into dict and then to csv.
-    Function monthly_data() takes one parameter which is the name of the month to extract data from.
+    Connect to Com-direct API, request transaction details and parse it into dictionary.
     """
     client_id = COMD_client_id
     client_secret = COMD_client_secret
@@ -66,7 +65,7 @@ def monthly_data(months):
     na_vals = ['NA', 'None']
     df1 = pd.read_csv('data/COMD_review1raw.csv',
                       names=['Date', 'Amount', 'Description', 'Info'],
-                      skiprows=4,  # need to skip at least 1 for header
+                      skiprows=2,  # need to skip at least 1 for header
                       na_values=na_vals)
     # df1['Description'] = df1.Description.str.split(':', expand=True)[1]
     # df1['Description'] = df1.Description.str.split('}', expand=True)[0]
@@ -77,7 +76,6 @@ def monthly_data(months):
     df.Description = np.where(df.Description.isnull(), df.Info, df.Description)
     df['Description'].fillna(df['Info'])  # very similar command to the above?
     df['Description'] = np.where(df['Description'].str.startswith('01'), df['Description'].str[2:], df['Description'])
-    # FILTERS
     df['Supermarkt'] = np.where(df['Description'].str.contains(
         'BIO COMPANY|EDEKA|PaySqu|PAYONE|NETTO|ALDI|Schäf|NAH UND|ZEIT FUER|ALNATUR|DER KUCH|CAFE LEBENS|BAECKER|Bio Kondit|unverpackt|REWE|WURST|Lebensmittell|LIDL|SCHAEFERS|MASYMAS|MERCADONA|TGB LOS TOMAS|Kamps',
         case=False), df['Amount'], np.nan)
@@ -97,7 +95,7 @@ def monthly_data(months):
         'Blocsport|Boulder|LATE SHOP|Carsharing|DECATHLON|BERLINER VERKEHR|JAVE|Paint Your Style', case=False), df['Amount'], np.nan)
 
     df.fillna(0, inplace=True)
-    # df.Info = np.where(df.Info.str.startswith('None'), df.Description, df.Info)
+    df.Info = np.where(df.Info.str.startswith('None'), df.Description, df.Info)
     df['Date'] = pd.to_datetime(df['Date'], format='%Y-%m-%d')
     df['Month'] = df['Date'].dt.month_name()
 
@@ -150,13 +148,7 @@ def email_files():
     files = [
         'data/Month_totals_21_data1.csv',
         'data/Archive/COMD-processed.csv',
-        'data/Archive/Januarydata.csv',
-        'data/Archive/Februarydata.csv',
-        'data/Archive/Marchdata.csv',
-        'data/Archive/Aprildata.csv',
-        'data/Archive/Maydata.csv',
-        'data/Archive/Junedata.csv',
-        'paypal30jun2021.xlsx',
+        'data/Novemberdata.csv'
     ]
 
     for file in files:
