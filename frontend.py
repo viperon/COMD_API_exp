@@ -1,8 +1,8 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import pandas as pd
-import numpy as np
 from constructor import detail_monthly_payments, yearly_view, set_income, set_expenditure, set_month_overview
+from params import FRONT_PASSWORD
 
 st.write('# 2021 Overview')
 
@@ -38,8 +38,6 @@ def yearly_view_graph():
     st.sidebar.write(pd.DataFrame(overview['average']))
     
 
-
-        
 def income_expenditure():
     income = set_income()
     expenditure = set_expenditure()
@@ -62,7 +60,6 @@ def view_monthly_payments(month):
     
     fig, ax = plt.subplots(figsize=(15,5))
     ax.bar(df.Date, abs(df['Amount']))
-    # ax.plot(np.zeros(len(compare)))
     
     plt.title(f'{month}')
     plt.grid()
@@ -73,12 +70,10 @@ def view_monthly_payments(month):
 def front_door():
     st.write('Welcome to our frontdoor.')
     st.image('https://images.fineartamerica.com/images/artworkimages/mediumlarge/1/vintage-bank-vault-lock-no-3-serge-averbukh.jpg')
-    password = 'ViCo2021'
+
     input_password = st.text_input('Enter your password')
     
-    if input_password == password:
-        
-        
+    if input_password == FRONT_PASSWORD:
         st.sidebar.write('Select your view:')
         if st.sidebar.checkbox('Yearly view'):
             st.write('''
@@ -103,11 +98,6 @@ def front_door():
             if month is not None:
                 st.write('You selected:', month) 
                 view_monthly_payments(month)
-            
-
-        
-    
-        
 
 front_door()
 

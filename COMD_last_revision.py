@@ -164,19 +164,13 @@ def email_files():
 
 def main():
 
-    parse_data()
-    monthly_data('June')
-    monthly_data('July')
-    monthly_data('August')
-    monthly_data('September')
-    monthly_data('October')
-    monthly_data('November')
+    parse_data()  # api call for new data
+    
+    monthly_data('November')  # log data into csv
     # email_files()
 
 
 if __name__ == "__main__":
     main()
 
-# TODO: connect to sqlite3?
 # TODO if you want visualize your results in a dashboard (Qlik or Tableau
-# TODO session token keep alive till PhotoTan activated

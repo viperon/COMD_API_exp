@@ -163,7 +163,7 @@ def log_month_to_csv(months, append_year_csv=False, month_totals=False):
 if __name__ == "__main__":
 
     # API CALL data appends into COMD_review1raw.csv
-    # parse_data()  # calls client connection
+    # parse_data()  # calls client connection to fetch new data
     
     # LOG TO CSV
     # log a specific month by writing into a csv, calls process_filters
